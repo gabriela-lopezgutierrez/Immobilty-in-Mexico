@@ -208,11 +208,10 @@ label define formality 0"Informal" 1"Formal"
 label values formal_worker formality
 
 preserve
-tostring folio ls, replace
-gen hh_person_id= folio + "_" + ls
-
-keep tb02_1 tb03 tb04 tb05 tb06 tb32p tb33p_a tb33p_b tb33p_c tb33p_d ///
-tb33p_e tb33p_f tb33p_g tb33p_h formal_total hh_person_id folio ls
+keep tb02_1 tb03 tb04 tb05 tb32p tb32s tb39p folio ls recent_anyjob ///
+total_jobs has_income month_monetarycomp month_nonmonetarycomp ///
+yearly_monetarycomp yearly_nonmonetarycomp month_comptype yearly_comptype ///
+worker_withinc hasprofit formal_worker
 
 global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"
 save "${finaldata}/employment_w1_fin.dta", replace
