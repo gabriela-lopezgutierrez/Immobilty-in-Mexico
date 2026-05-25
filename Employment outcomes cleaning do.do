@@ -11,7 +11,7 @@ Book:                  IIIA - Characteristics of adult household members
 Subsection:            TB - Employment
 Dofile author:         Gabriela Judith López Gutiérrez
 Creation date:         May 2026 /20
-Modification date:     
+Modification date:     May 2026 /25
 Product 1:             Produce unidimensional proxies for capability 
                        (unemployment - having a job)
 Product 2:             Produce contrasting labour outcomes 
@@ -94,9 +94,9 @@ label values
 global intdata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.2 Intermediate data"
 save "${intdata}/employment_w1.dta", replace
 
-*------------------------------------------------------------------------------*
+/*==============================================================================
 * 3. Generate variables - labour outcomes (t-1 period)                         *
-* ---------------------------------------------------------------------------- *
+==============================================================================*/
 
 clear all
 use "${intdata}/employment_w1.dta"
@@ -192,7 +192,7 @@ tab worker_withinc if tb32p==3 | tb32p==4
 label define paycat 1"Paid work/business" 0"Unpaid work/business"
 label values worker_withinc paycat
 *Add those who have profit from business / self-employment / others
-replace worker_withinc=1 if hasprofi==1
+replace worker_withinc=1 if hasprofit==1
 *Perform cross tabulations to see if categories match
 tab recent_anyjob worker_withinc
 tab tb32p worker_withinc, row nofreq
@@ -217,26 +217,3 @@ tb33p_e tb33p_f tb33p_g tb33p_h formal_total hh_person_id folio ls
 global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"
 save "${finaldata}/employment_w1_fin.dta", replace
 
-*------------------------------------------------------------------------------*
-* 3. Merge with demographic data (t-1 period)                                  *
-* ---------------------------------------------------------------------------- *
-
-clear all
-
-global rawdata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.1 Raw data\Wave I\Household\hh02dta_bc - Book C (Control book) W1"
-use "${rawdata}/c_ls.dta"
-numlabel, add
-
-preserve
-tostring folio ls, replace
-gen hh_person_id= folio + "_" + ls
-
-save "${intdata}/household_char.dta"
-
-
-cd "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"
-
-
-merge 1:1 hh_person_id using employment_w1_fin.dta
-global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"
-save "${finaldata}/employment_w1_merg.dta"
