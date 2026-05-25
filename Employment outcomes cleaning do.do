@@ -175,7 +175,15 @@ replace yearly_comptype=2 if yearly_monetarycomp==1 & yearly_nonmonetarycomp==1
 replace yearly_comptype=1 if yearly_monetarycomp==1 & yearly_nonmonetarycomp==0
 replace yearly_comptype=0 if yearly_monetarycomp==0 & yearly_nonmonetarycomp==1
 
-*------------3.7: Receives monetary income variable - workers 
+*------------3.7: Generates profits - business owners (self employed/others)
+gen hasprofit = (tb37p1_2>0 & tb37p1_2!=.) | ///
+(tb37p2_2>0 & tb37p2_2!=.) | (tb37s1_2>0 & tb37s1_2!=.) | ///
+(tb37s2_2>0 & tb37s2_2!=.) | (tb38p1_2>0 & tb38p1_2!=.) | ///
+(tb38p2_2>0 & tb38p2_2!=.) | (tb38s1_2>0 & tb38s1_2!=.) | ///
+(tb38s2_2>0 & tb38s2_2!=.)
+tab tb32p hasprofit
+
+*------------3.8: Perceives monetary income variable - workers and others
 *Note:(add those that did not know?)
 gen worker_withinc = (month_comptype==2 | month_comptype==1 | yearly_comptype==2 | yearly_comptype==1)
 replace worker_withinc=1 if (tb36b_2>0  & tb36b_2!=.) | (tb35b_2>0  & tb35b_2!=.) 
@@ -183,18 +191,21 @@ replace worker_withinc=1 if (tb36b_2>0  & tb36b_2!=.) | (tb35b_2>0  & tb35b_2!=.
 tab worker_withinc if tb32p==3 | tb32p==4
 label define paycat 1"Paid work/business" 0"Unpaid work/business"
 label values worker_withinc paycat
+*Add those who have profit from business / self-employment / others
+replace worker_withinc=1 if hasprofi==1
+*Perform cross tabulations to see if categories match
+tab recent_anyjob worker_withinc
+tab tb32p worker_withinc, row nofreq
 
-
-* Informality: legal definition (social security)
-gen formal_worker = tb32p==3 & (tb33p_a==1 | tb33p_b==1 | tb33s_d==1 | ///
-     tb33s_e==1 | tb33s_f==1 | tb33s_g==1)
-	 
-	 
+*-----------3.9: Informality: legalistic perspective (has social security)
+gen formal_worker = (tb33p_d==4 | tb33p_e==5 | tb33p_f==6 | ///
+tb33p_g==7)
+replace formal_worker=1 if tb33s_d==4
+replace formal_worker=1 if tb33s_e==5
+replace formal_worker=1 if tb33s_f==6
+replace formal_worker=1 if tb33s_g==7
 label define formality 0"Informal" 1"Formal"
-label values formal_total formality
-replace formal_total=. if tb02_1==3
-replace formal_total=. if tb02_1==4
-replace formal_total=. if tb02_1==6
+label values formal_worker formality
 
 preserve
 tostring folio ls, replace
