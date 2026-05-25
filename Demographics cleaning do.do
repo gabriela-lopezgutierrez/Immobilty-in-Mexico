@@ -1,5 +1,4 @@
 /*==============================================================================
-
                       Cleaning individual datasets                          
 ==============================================================================*/
 /*
@@ -59,3 +58,26 @@ foreach var in ls09 ls12 ls13_1 ls16 {
 label define marital 1"Concubinage" 2"Separated" 3"Divorced" 4"Widow" ///
 5"Married" 6"Single"
 label values ls10 marital
+
+*------------2.5: Label education level
+label define last_education 1"Without instruction" 2"Preeschool or kinder" ///
+3"Elementary" 4"Secondary" 5"Open secondary" 6"High school" ///
+7"Open High school" 8"Normal basic" 9"College" 10"Graduate" 98"Does not know"
+label values ls14 last_education
+
+/*==============================================================================
+ 3.Generate variables - demographics (wave 1)
+==============================================================================*/
+
+*------------3.1: Generate age categories
+recode ls02_2 (0/12=1 "Child") (13/17=2 "Teenager") (18/29=3 "Young adult") ///
+(30/44=4 "Adult") (45/64=5 "Middle age") (65/max=6 "Older adult"), ///
+gen(age_cat)
+
+*------------3.2: Generate college education
+gen college = (ls14>=9 & ls14!=98 & ls14!=.)
+label define college 1"Has college education" 0"Doesn't have college education"
+label values college college
+
+global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"
+save "${finaldata}/demographics_w1_fin.dta", replace
