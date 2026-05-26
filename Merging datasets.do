@@ -13,6 +13,7 @@ Dofile author:         Gabriela Judith López Gutiérrez
 Creation date:         May 2026 /25
 Modification date:     
 Product 1:             Merge employment outcomes with demographic data
+Product 2:             Merge the previous with aspirations data
 
 */
 
@@ -21,7 +22,7 @@ Product 1:             Merge employment outcomes with demographic data
 ==============================================================================*/
 
 /*==============================================================================
- 1.Generate merging codes
+ 1.Generate merging codes (1st merge with demographics)
 ==============================================================================*/
 
 *------------1.1: Generate codes for demographic hh data
@@ -44,6 +45,8 @@ global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Fina
 use "${finaldata}/employment_w1_fin.dta"
 numlabel, add
 
+** Note: not sure if here I would first have to do a vertical merge with the proxy book
+
 tostring folio, gen(folio_str) format(%15.0f)
 tostring ls, gen(ls_str)
 gen individual_id = folio_str + "_" + ls_str
@@ -52,7 +55,7 @@ global mergeddata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Mer
 save "${mergeddata}/employment_w1_fmerge.dta",replace
 
 /*==============================================================================
- 2.Merge and save
+ 2.Merge and save (1st merge with demographics)
 ==============================================================================*/
 cd "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
 merge 1:1 individual_id using demographics_w1_fmerge.dta
@@ -60,4 +63,31 @@ global mergeddata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Mer
 
 *Verify that only kids did not merge as "TB - Employment" is only recorded for adults in hh
 tab age_cat _merge, miss
-save "${mergeddata}/empl_and_demo_w1merged.dta", replace
+drop if _merge==2
+save "${mergeddata}/empl_and_demo_w1_mg.dta", replace
+
+/*==============================================================================
+ 3.Generate merging codes (2nd merge with aspirations)
+==============================================================================*/
+
+*------------3.1: Generate codes for aspirations data
+clear all
+global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"
+use "${finaldata}/aspirations_w1_fin.dta"
+numlabel, add
+
+tostring folio, gen(folio_str) format(%15.0f)
+tostring ls, gen(ls_str)
+gen individual_id = folio_str + "_" + ls_str
+
+global mergeddata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
+save "${mergeddata}/aspirations_w1_fmg.dta", replace
+
+/*==============================================================================
+ 4.Merge and save (2nd merge with aspirations)
+==============================================================================*/
+cd "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
+merge 1:1 individual_id using empl_and_demo_w1_mg.dta, generate(_merge_2)
+global mergeddata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
+
+save "${mergeddata}/empldemo_asp_w1_mg.dta", replace
