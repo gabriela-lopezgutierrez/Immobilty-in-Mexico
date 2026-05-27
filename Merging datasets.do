@@ -54,6 +54,7 @@ gen individual_id = folio_str + "_" + ls_str
 global mergeddata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
 save "${mergeddata}/employment_w1_fmerge.dta",replace
 
+
 /*==============================================================================
  2.Merge and save (1st merge with demographics)
 ==============================================================================*/

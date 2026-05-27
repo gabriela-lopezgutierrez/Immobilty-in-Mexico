@@ -65,9 +65,17 @@ label define last_education 1"Without instruction" 2"Preeschool or kinder" ///
 7"Open High school" 8"Normal basic" 9"College" 10"Graduate" 98"Does not know"
 label values ls14 last_education
 
+global interdata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.2 Intermediate data"
+save "${interdata}/demographics_w1_int.dta", replace
+
 /*==============================================================================
  3.Generate variables - demographics (wave 1)
 ==============================================================================*/
+
+clear all
+global interdata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.2 Intermediate data"
+use "${interdata}/demographics_w1_int.dta"
+numlabel, add
 
 *------------3.1: Generate age categories
 recode ls02_2 (0/12=1 "Child") (13/17=2 "Teenager") (18/29=3 "Young adult") ///
@@ -78,6 +86,19 @@ gen(age_cat)
 gen college = (ls14>=9 & ls14!=98 & ls14!=.)
 label define college 1"Has college education" 0"Doesn't have college education"
 label values college college
+
+*------------3.3: Generate highschool education
+gen highschool_edu=1 if ls14>=6 & ls14!=98 & ls14!=.
+replace highschool_edu=0 if ls14<6
+label define highschool 1"Has highschool education" ///
+0"Doesn't have highschool education"
+label values highschool_edu highschool
+
+*------------3.4: Generate education
+gen educated=1 if ls14>1 & ls14!=98 & ls14!=.
+replace educated=0 if ls14==1
+label define educated 1"Has education" 0"Does not have education"
+label values educated educated
 
 global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"
 save "${finaldata}/demographics_w1_fin.dta", replace
