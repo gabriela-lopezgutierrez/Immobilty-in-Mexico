@@ -92,14 +92,14 @@ label values
 
 *------------2.6: Save intermediate dataset
 global intdata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.2 Intermediate data"
-save "${intdata}/employment_w1.dta", replace
+save "${intdata}/employment_w1_int.dta", replace
 
 /*==============================================================================
 * 3. Generate variables - labour outcomes (t-1 period)                         *
 ==============================================================================*/
 
 clear all
-use "${intdata}/employment_w1.dta"
+use "${intdata}/employment_w1_int.dta"
 numlabel, add
 
 *------------3.1: Recent job or activity

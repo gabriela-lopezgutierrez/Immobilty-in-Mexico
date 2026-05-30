@@ -14,6 +14,7 @@ Creation date:         May 2026 /25
 Modification date:     
 Product 1:             Merge employment outcomes with demographic data
 Product 2:             Merge the previous with aspirations data
+Product 3:             Merge the previous with asset data
 
 */
 
@@ -89,6 +90,29 @@ save "${mergeddata}/aspirations_w1_fmg.dta", replace
 ==============================================================================*/
 cd "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
 merge 1:1 individual_id using empl_and_demo_w1_mg.dta, generate(_merge_2)
-global mergeddata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
 
+global mergeddata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
 save "${mergeddata}/empldemo_asp_w1_mg.dta", replace
+
+/*==============================================================================
+ 5.Generate merging codes (2rd merge with assets)
+==============================================================================*/
+
+*------------5.1: Generate codes for assets data
+clear all
+global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"
+use "${finaldata}/hhassets_w1_fin.dta", replace
+rename folio_str2 folio_str
+
+global mergedata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
+save "${mergedata}/hhassets_w1_fmg.dta", replace
+
+
+/*==============================================================================
+ 6.Merge and save (3rd merge with assets)
+==============================================================================*/
+cd "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
+merge 1:m folio_str using empldemo_asp_w1_mg.dta, generate(_merge_3)
+
+global mergeddata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
+save "${mergeddata}/empldemoassets_asp_w1_mg.dta", replace
