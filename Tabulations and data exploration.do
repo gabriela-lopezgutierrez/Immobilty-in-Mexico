@@ -12,12 +12,9 @@ Dofile author:         Gabriela Judith López Gutiérrez
 Creation date:         May 2026 /26
 Modification date:     May 2026 /27
 Product 1:             Contrast two unidimensional capability measurements
-                       - Figure 2: Operationalized (im)mobility categories 
-					     using the employment proxy
-					   - Figure 3: Operationalized (im)mobility categories
-					     using the education proxy
+                       - Figure 2: Four quadrants graphic
 Product 2:             Generate transition graphics between categories
-                       - Figure 4: Transitions between categories	   
+                       - Figure 3: Transitions between categories	   
 Code inspo:            https://github.com/asjadnaqvi/stata-sankey/blob/main/README.md
 */
 
@@ -75,17 +72,26 @@ label values highschool_edu edu_lbl
 label values college edu_lbl
 label values educated edu_lbl
 
+*------------3.3: Generate secondary education
+gen secondary_edu=1 if ls14>=4 & ls14!=98 & ls14!=.
+replace secondary_edu=0 if ls14<4
+label define secondary 1"Has secondary education" ///
+0"Doesn't have secondary education"
+label values secondary_edu secondary
+label values secondary_edu edu_lbl
+
 *------------3.2: Cross-tabulations of aspirations-capabilities
 tab asp_wave1 recent_anyjob , cell
 tab asp_wave1 highschool_edu, cell
 tab asp_wave1 college, cell
+tab asp_wave1 secondary_edu, cell
 
-**Note: for graphs 3.3, 3.4 and 3.5 percentages are extracted from 3.2
+**Note: for graphs 3.3, from 3.2
 
 cd "C:\Users\hp\Desktop\Thesis\Stata procedure\03. Output\03.2 Figures"
 
-*------------3.3: Graph of employment proxy for capability
-* Figure 2: Operationalized (im)mobility categories using the employment proxy
+*------------3.3: Combined graphic
+* Figure 2: Operationalized (im)mobility categories using various proxies
 twoway function y=0, range(0 100) ///
 lcolor(none) ///
 , ///
@@ -93,57 +99,21 @@ xscale(range(0 100)) ///
 yscale(range(0 100)) ///
 xline(50, lpattern(dash) lcolor(black)) ///
 yline(50, lpattern(dash) lcolor(black)) ///
-xtitle("Mobility capability (employment proxy)") ///
+xtitle("Mobility capability (employment versus education proxies)") ///
 ytitle("Migration aspirations") ///
 xlabel(25 "Low capability" 75 "High capability", noticks) ///
-ylabel(25 "No aspiration" 75 "Aspiration", angle(horizontal) noticks) ///
-text(75 25 "Potential involuntary immobility" "7.08%", size(medium)) ///
-text(75 75 "Potential mobility" "10.02%", size(medium)) ///
-text(25 25 "Potential acquiescent immobility" "38.56%", size(medium)) ///
-text(25 75 "Potential voluntary immobility" "44.34%", size(medium)) ///
-legend(off)
-graph export fig2_employment_proxy.svg, replace
-
-
-*------------3.4: Graph of education (high-school) proxy for capability
-twoway function y=0, range(0 100) ///
-lcolor (none) ///
-, ///
-xscale(range(0 100)) ///
-yscale(range(0 100)) ///
-xline(50, lpattern(dash) lcolor(black)) ///
-yline(50, lpattern(dash) lcolor(black)) ///
-xtitle("Mobility capability (education proxy)") ///
-ytitle("Migration aspirations") ///
-xlabel(25 "Low capability" 75 "High capability", noticks) ///
-ylabel(25 "No aspiration" 75 "Aspiration", angle(horizontal) noticks) ///
-text(75 25 "Potential involuntary immobility" "9.97%", size(medium)) ///
-text(75 75 "Potential mobility" "7.15%", size(medium)) ///
-text(25 25 "Potential acquiescent immobility" "66.89%", size(medium)) ///
-text(25 75 "Potential voluntary immobility" "15.99%", size(medium)) ///
+ylabel(25 "Low aspiration" 75 "High aspiration", angle(vertical) noticks) ///
+text(82 25 "{bf:Involuntary immobility}", size(medium)) ///
+text(72 25 "Employment: 7.08%" "Secondary: 4.61%" "College: 14.24%", size(medium)) ///
+text(82 75 "{bf:Mobility}", size(medium)) ///
+text(72 75 "Employment: 10.02%" "Secondary: 12.51%" "College: 2.86%", size(medium)) ///
+text(32 25 "{bf:Acquiescent immobility}", size(medium)) ///
+text(22 25 "Employment: 38.56%" "Secondary: 45.68%" "College: 77.21%", size(medium)) ///
+text(32 75 "{bf:Voluntary immobility}", size(medium)) ///
+text(22 75 "Employment: 44.34%" "Secondary: 37.20%" "College: 5.69%", size(medium)) ///
 legend(off)
 
-*------------3.5: Graph of education (college) proxy for capability
-* Figure 2: Operationalized (im)mobility categories using the employment proxy
-twoway function y=0, range(0 100) ///
-lcolor(none) ///
-, ///
-xscale(range(0 100)) ///
-yscale(range(0 100)) ///
-xline(50, lpattern(dash) lcolor(black)) ///
-yline(50, lpattern(dash) lcolor(black)) ///
-xtitle("Mobility capability (education proxy)") ///
-ytitle("Migration aspirations") ///
-xlabel(25 "Low capability" 75 "High capability", noticks) ///
-ylabel(25 "No aspiration" 75 "Aspiration", angle(horizontal) noticks) ///
-text(75 25 "Potential involuntary immobility" "14.24%", size(medium)) ///
-text(75 75 "Potential mobility" "2.86%", size(medium)) ///
-text(25 25 "Potential acquiescent immobility" "77.21%", size(medium)) ///
-text(25 75 "Potential voluntary immobility" "5.69%", size(medium)) ///
-legend(off)
-graph export fig2_education_proxy.svg, replace
-
-save "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data/empldemo_asp_w1_mg.dta", replace
+graph export fig2_combined_proxies.svg, replace
 
 
 /*==============================================================================

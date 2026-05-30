@@ -100,5 +100,12 @@ replace educated=0 if ls14==1
 label define educated 1"Has education" 0"Does not have education"
 label values educated educated
 
+*------------3.5: Generate secondary education
+gen secondary_edu=1 if ls14>=4 & ls14!=98 & ls14!=.
+replace secondary_edu=0 if ls14<4
+label define secondary 1"Has secondary education" ///
+0"Doesn't have secondary education"
+label values secondary_edu secondary
+
 global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"
 save "${finaldata}/demographics_w1_fin.dta", replace

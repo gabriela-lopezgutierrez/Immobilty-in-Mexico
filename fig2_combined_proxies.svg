@@ -243,20 +243,28 @@
 	<line x1="5094.06" y1="1462.56" x2="5158.86" y2="1462.56" style="stroke:#000000;stroke-width:9.72"/>
 	<line x1="5191.26" y1="1462.56" x2="5256.06" y2="1462.56" style="stroke:#000000;stroke-width:9.72"/>
 	<path d="" stroke-linejoin="round" style="fill:none;stroke:#000000;stroke-opacity:0.00;stroke-width:0.00"/>
-	<text x="1678.56" y="805.07" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">Potential involuntary immobility (employment)</text>
-	<text x="1678.56" y="928.77" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">7.08%</text>
-	<text x="4036.33" y="805.07" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">Potential mobility</text>
-	<text x="4036.33" y="928.77" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">10.02%</text>
-	<text x="1678.56" y="2082.85" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">Potential acquiescent immobility</text>
-	<text x="1678.56" y="2206.54" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">38.56%</text>
-	<text x="4036.33" y="2082.85" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">Potential voluntary immobility</text>
-	<text x="4036.33" y="2206.54" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">44.34%</text>
+	<text x="1678.56" y="687.96" style="font-family:'Helvetica';font-weight:bold;font-size:123.69px;fill:#000000" text-anchor="middle">Involuntary immobility</text>
+	<text x="1678.56" y="819.92" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">Employment: 7.08%</text>
+	<text x="1678.56" y="943.62" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">Secondary: 4.61%</text>
+	<text x="1678.56" y="1067.31" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">College: 14.24%</text>
+	<text x="4036.33" y="687.96" style="font-family:'Helvetica';font-weight:bold;font-size:123.69px;fill:#000000" text-anchor="middle">Mobility</text>
+	<text x="4036.33" y="819.92" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">Employment: 10.02%</text>
+	<text x="4036.33" y="943.62" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">Secondary: 12.51%</text>
+	<text x="4036.33" y="1067.31" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">College: 2.86%</text>
+	<text x="1678.56" y="1965.90" style="font-family:'Helvetica';font-weight:bold;font-size:123.69px;fill:#000000" text-anchor="middle">Acquiescent immobility</text>
+	<text x="1678.56" y="2097.70" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">Employment: 38.56%</text>
+	<text x="1678.56" y="2221.39" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">Secondary: 45.68%</text>
+	<text x="1678.56" y="2345.09" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">College: 77.21%</text>
+	<text x="4036.33" y="1965.90" style="font-family:'Helvetica';font-weight:bold;font-size:123.69px;fill:#000000" text-anchor="middle">Voluntary immobility</text>
+	<text x="4036.33" y="2097.70" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">Employment: 44.34%</text>
+	<text x="4036.33" y="2221.39" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">Secondary: 37.20%</text>
+	<text x="4036.33" y="2345.09" style="font-family:'Helvetica';font-size:123.69px;fill:#000000" text-anchor="middle">College: 5.69%</text>
 	<line x1="428.46" y1="2811.54" x2="428.46" y2="113.40" style="stroke:#000000;stroke-width:6.48"/>
-	<text x="371.99" y="2101.44" style="font-family:'Helvetica';font-size:112.56px;fill:#000000" transform="rotate(-90 371.99,2101.44)" text-anchor="middle">No aspiration</text>
-	<text x="371.99" y="823.67" style="font-family:'Helvetica';font-size:112.56px;fill:#000000" transform="rotate(-90 371.99,823.67)" text-anchor="middle">Aspiration</text>
+	<text x="371.99" y="2101.44" style="font-family:'Helvetica';font-size:112.56px;fill:#000000" transform="rotate(-90 371.99,2101.44)" text-anchor="middle">Low aspiration</text>
+	<text x="371.99" y="823.67" style="font-family:'Helvetica';font-size:112.56px;fill:#000000" transform="rotate(-90 371.99,823.67)" text-anchor="middle">High aspiration</text>
 	<text x="214.55" y="1462.56" style="font-family:'Helvetica';font-size:112.56px;fill:#000000" transform="rotate(-90 214.55,1462.56)" text-anchor="middle">Migration aspirations</text>
 	<line x1="428.46" y1="2811.54" x2="5286.60" y2="2811.54" style="stroke:#000000;stroke-width:6.48"/>
 	<text x="1678.56" y="2912.86" style="font-family:'Helvetica';font-size:112.56px;fill:#000000" text-anchor="middle">Low capability</text>
 	<text x="4036.33" y="2912.86" style="font-family:'Helvetica';font-size:112.56px;fill:#000000" text-anchor="middle">High capability</text>
-	<text x="2857.44" y="3070.31" style="font-family:'Helvetica';font-size:112.56px;fill:#000000" text-anchor="middle">Mobility capability (employment proxy)</text>
+	<text x="2857.44" y="3070.31" style="font-family:'Helvetica';font-size:112.56px;fill:#000000" text-anchor="middle">Mobility capability (employment versus education proxies)</text>
 </svg>
