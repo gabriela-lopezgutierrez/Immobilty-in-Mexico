@@ -15,6 +15,8 @@ Modification date:
 Product 1:             Merge employment outcomes with demographic data
 Product 2:             Merge the previous with aspirations data
 Product 3:             Merge the previous with asset data
+Product 4:             Merge household and land ownership data
+Product 5:             Merge previous with product 3
 
 */
 
@@ -107,7 +109,6 @@ rename folio_str2 folio_str
 global mergedata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
 save "${mergedata}/hhassets_w1_fmg.dta", replace
 
-
 /*==============================================================================
  6.Merge and save (3rd merge with assets)
 ==============================================================================*/
@@ -116,3 +117,54 @@ merge 1:m folio_str using empldemo_asp_w1_mg.dta, generate(_merge_3)
 
 global mergeddata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
 save "${mergeddata}/empldemoassets_asp_w1_mg.dta", replace
+
+/*==============================================================================
+ 7.Generate merging codes (1st merge house and land ownership)
+==============================================================================*/
+
+*------------7.1: Generate codes for house ownership
+clear all
+global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"
+use "${finaldata}/housepropurban_w1_fin.dta", replace
+tostring folio, gen(folio_str) format(%15.0f)
+
+global mergedata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
+save "${mergedata}/housepropurban_w1_fmg.dta", replace
+
+*------------7.2: Generate codes for land ownership
+clear all
+global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"
+use "${finaldata}/landrural_w1_fin.dta", replace
+tostring folio, gen(folio_str) format(%15.0f)
+
+*-----------7.3: Collapse into single row households
+gen value=1
+bysort folio_str : egen count_obs = count(value)
+collapse (sum) hh_land hh_document, by(folio_str)
+replace hh_land=1 if hh_land>1
+replace hh_document=1 if hh_document>1
+
+global mergedata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
+save "${mergedata}/landrural_w1_fmg.dta", replace
+
+/*==============================================================================
+ 8.Merge and save (1st merge house and land ownership)
+==============================================================================*/
+cd "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
+merge 1:1 folio_str using housepropurban_w1_fmg.dta, generate(_merge_1)
+
+global mergeddata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
+save "${mergeddata}/houseandland_w1_mg.dta", replace
+
+/*==============================================================================
+ 9.Prepare product 3 and product 4 for merge
+==============================================================================*/
+clear all
+global mergedata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
+use "${mergedata}/empldemoassets_asp_w1_mg.dta"
+
+cd "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
+merge m:1 folio_str using houseandland_w1_mg.dta, generate(_merge_4)
+
+global mergeddata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.4 Merged data"
+save "${mergeddata}/allproxies_w1_mg.dta", replace

@@ -10,12 +10,12 @@ Book:                  II - Household economy
 Subsection:            AH - Household assets
 Dofile author:         Gabriela Judith López Gutiérrez
 Creation date:         May 2026 /30
-Modification date:     
+Modification date:     May 2026 /01
 Product 1:             Produce household asset index
 */
 
 /*==============================================================================
-                            Wave 1 or period t-1
+                     Wave 1 or period t-1 (Household level)
 ==============================================================================*/
 
 /*==============================================================================
@@ -105,5 +105,6 @@ label values immob_asset2 asset_lbl
 *------------3.8: Save dataset
 global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"
 save "${finaldata}/hhassets_w1_fin.dta", replace
+
 
 
