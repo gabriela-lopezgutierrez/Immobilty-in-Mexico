@@ -89,10 +89,29 @@ replace hh_land=1 if (hh_land==0 & su09_1==1) | (hh_land==0 & su09_1==2) | ///
 gen hh_document=1 if (su09_1==1 & hh_land==1 | su09_1==2 & hh_land==1 | su09_1==3 & hh_land==1)
 replace hh_document=0 if (su09_1==4 & hh_land==1 | su09_1==. & hh_land==1)
 
-*------------3.5: Save dataset
+*------------3.5: Replace ejido community as land can't be sold under this property
+replace hh_land=0 if su08==2
+replace hh_land=0 if su08==2
+
+
+*------------3.6: Count whether each member owns at least one plot in the household
+foreach var of varlist su06_1a-su06_1i {
+    bysort folio: egen own_`var' = max(`var')
+}
+*-----------3.7: Count number of household members owning plots
+egen nowners = rowtotal(own_su06_1a-own_su06_1i)
+preserve
+bysort folio: keep if _n==1
+
+tab nowners
+restore
+
+*------------3.8: Save dataset
 global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"
 save "${finaldata}/landrural_w1_fin.dta", replace
 
+
+use "${finaldata}/landrural_w1_fin.dta", replace
 /*==============================================================================
                                     URBAN HH
 ==============================================================================*/
@@ -140,6 +159,9 @@ keep folio cv02_1
 gen hh_house=1 if (cv02_1==2 | cv02_1==3)
 replace hh_house=0 if (cv02_1==1 | cv02_1==4 | cv02_1==5 | cv02_1==6)
 tab hh_house
+
+*------------7.2: Replace ejido community as land can't be sold under this property
+replace hh_house=0 if cv02_1==3
 
 *------------7.2: Save dataset
 global finaldata= "C:\Users\hp\Desktop\Thesis\Stata procedure\01. Data\01.3 Final data"

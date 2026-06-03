@@ -522,13 +522,13 @@ ytitle("Migration aspirations") ///
 xlabel(25 "Low capability" 75 "High capability", noticks) ///
 ylabel(25 "Low aspiration" 75 "High aspiration", angle(vertical) noticks) ///
 text(82 25 "{bf:Involuntary immobility}", size(medium)) ///
-text(65 25 "Employment: 7.08%" "Secondary: 4.61%" "College: 14.24%" "Assets: 8.59%" "Property: 4.94%", size(medium)) ///
+text(65 25 "Employment: 7.08%" "Secondary: 4.61%" "College: 14.24%" "Assets: 8.59%" "Property: 6.20%", size(medium)) ///
 text(82 75 "{bf:Mobility}", size(medium)) ///
-text(65 75 "Employment: 10.02%" "Secondary: 12.51%" "College: 2.86%" "Assets: 8.22%" "Property: 12.15%", size(medium)) ///
+text(65 75 "Employment: 10.02%" "Secondary: 12.51%" "College: 2.86%" "Assets: 8.22%" "Property: 10.90%", size(medium)) ///
 text(32 25 "{bf:Acquiescent immobility}", size(medium)) ///
-text(15 25 "Employment: 38.56%" "Secondary: 45.68%" "College: 77.21%" "Assets: 53.34%" "Property: 16.32%", size(medium)) ///
+text(15 25 "Employment: 38.56%" "Secondary: 45.68%" "College: 77.21%" "Assets: 53.34%" "Property: 24.77%", size(medium)) ///
 text(32 75 "{bf:Voluntary immobility}", size(medium)) ///
-text(15 75 "Employment: 44.34%" "Secondary: 37.20%" "College: 5.69%" "Assets: 29.85%" "Property: 66.58%", size(medium)) ///
+text(15 75 "Employment: 44.34%" "Secondary: 37.20%" "College: 5.69%" "Assets: 29.85%" "Property: 58.13%", size(medium)) ///
 legend(off)
 
 cd "C:\Users\hp\Desktop\Thesis\Stata procedure\03. Output\03.2 Figures"
