@@ -1,0 +1,137 @@
+---
+title: 'Code for: The effect of climate change on people’s (im)mobility in Mexico:
+  a multidimensional capability mobility approach - practice 1'
+author: "Gabriela López"
+date: "2026-07-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#install.packages(tidyverse)
+#install.packages("ragtop")
+#install.packages("raster")
+#install.packages("ncdf4")
+#install.packages("gdata")
+#install.packages("geosphere")
+
+#Note: this packages come from book (https://r.geocompx.org/spatial-class) - 
+#these are the newer versions of the previous packages
+#install.packages("sf")
+#install.packages("terra")
+#install.packages("spData")
+#install.packages("spDataLarge", repos = "https://geocompr.r-universe.dev")
+#install.packages("tidyverse")
+
+#library(dplyr)
+#library(ggplot2)
+library(tidyverse)
+#library(ragtop)
+#library(raster)
+library(ncdf4)
+#library(gdata)
+#library(geosphere)
+
+```
+
+
+```{r load data, include=FALSE}
+our_nc_data <- nc_open("C:/Users/hp/Desktop/Dissertation/Dissertation procedure/01. Data/01.1 Raw data/Shapefiles and geocoded data/World Bank CCKP/timeseries-tas-annual-mean_cru-x0.5_cru-ts4.10-historical_timeseries_mean_1901-2025.nc")
+
+print(our_nc_data)
+```
+
+```{r extract data from ncdfile, include=FALSE}
+
+attributes(our_nc_data$var)
+attributes(our_nc_data$dim)
+
+lat <- ncvar_get(our_nc_data, "lat")
+nlat <- dim(lat)
+lon <- ncvar_get(our_nc_data, "lon")
+nlon <- dim(lon)
+
+print(c(nlon, nlat))
+
+time <- ncvar_get(our_nc_data, "time")
+head(time)
+tunits <- ncatt_get(our_nc_data, "time", "units")
+nt <- dim(time)
+
+avgmonthtemp_array <- ncvar_get(our_nc_data, "timeseries-tas-annual-mean")
+#head(avgmonthtemp_array)
+#tail(avgmonthtemp_array)
+fillvalue <- ncatt_get(our_nc_data, "timeseries-tas-annual-mean", "_FillValue")
+dim(avgmonthtemp_array)
+
+avgmonthtemp_array[avgmonthtemp_array==fillvalue$value] <- NA
+avgmonthtemp_array
+
+print(tunits)
+ncatt_get(our_nc_data, "time", "units")
+
+
+is.numeric(time)
+typeof(time)
+dput(head(time))
+
+```
+
+
+```{r create time var in format, include=FALSE}
+time_obs <- as.Date(as.numeric(time), origin = "1850-01-01")
+head(time_obs)
+tail(time_obs)
+dim(time_obs)
+range(time_obs)
+
+print(avgmonthtemp_array)
+#amtemp_slice <- avgmonthtemp_array[ , , 100] 
+#amtemp_slice <- avgmonthtemp_array[ , , 102] 
+#image(lon, lat, amtemp_slice)
+```
+```{r create matrix array, include=FALSE}
+lonlattime <- as.matrix(expand.grid(lon,lat,time_obs)) # this might take several seconds
+
+saveRDS(avgmonthtemp_array,
+        "avgmonthtemp_array.rds")
+
+saveRDS(lonlattime,
+        "lonlattime.rds")
+
+save.image("C:/Users/hp/Desktop/Dissertation/Dissertation procedure/02. Codes/02.1 Cleaning/climate_workspace.RData")
+```
+
+
+```{r reshaping data frame, include=FALSE}
+avgtemp_vec_long <- as.vector(avgmonthtemp_array)
+length(avgtemp_vec_long)
+
+avgtemp_obs <- data.frame(cbind(lonlattime, avgtemp_vec_long))
+head(avgtemp_obs)
+tail(avgtemp_obs)
+
+colnames(avgtemp_obs) <- c("Long","Lat","Date","Average_temp_annual")
+```
+
+
+```{r remove NAs, include=FALSE}
+avgtemp_final <- na.omit(avgtemp_obs)
+dim(avgtemp_obs)
+dim(avgtemp_final)
+
+avgtemp_final2 <- avgtemp_final[-c(1:2)]
+avgtemp_final2
+
+avgtemp_final2$Date <- as.Date(avgtemp_final2$Date)
+avgtemp_final2$Average_temp_annual <- as.double(avgtemp_final2$Average_temp_annual)
+
+avgtemp_final2 <- avgtemp_final2 %>%
+                group_by(Date) %>%
+                summarize(Mean_temp = mean(Average_temp_annual))
+
+dim(avgtemp_final2)
+
+write.csv(as.data.frame(avgtemp_final2), "mean_anual_temp_1990_2025_global.csv", row.names=T)
+```
+
