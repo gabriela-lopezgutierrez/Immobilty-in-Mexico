@@ -61,6 +61,8 @@ use "${rawdata}\iiib_es"
 tostring folio, gen(folio_str) format(%15.0f)
 tostring ls, gen(ls_str)
 gen individual_id = folio_str + "_" + ls_str
+rename ls ls_individual
+rename ls_str ls_str_individual
 save "${rawdata}\selfperchealth_aux", replace
 
 
@@ -79,7 +81,7 @@ save "${rawdata}\cbportad_aux", replace
 merge 1:m folio_str using "${rawdata}\selfperchealth_aux", generate(_merge_1)
 
 *------------1.3: Keep only relevant data
-keep folio folio_str ls ls_str edo mpio loc edad id_loc es01 es05 es15 es16 individual_id _merge_1
+keep folio folio_str ls ls_str edo mpio loc edad id_loc es01 es05 es15 es16 individual_id _merge_1 ls_str_individual ls_individual
 
 /*==============================================================================
  2.Add label variables - HS self perception (wave 1) 
@@ -127,6 +129,9 @@ label var panel_wave "Panel wave from MxFLS"
 order panel_wave, b(folio)
 gen origin_report="Official book"
 label var origin_report "Type of book the data originated from"
+label var ls "Individual ID from cover book"
+label var ls_str "Individual ID from cover book"
+sort folio ls_individual
 save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_finofficial.dta", replace
 
 
@@ -154,6 +159,8 @@ use "${rawdata}\p_es"
 tostring folio, gen(folio_str) format(%15.0f)
 tostring ls, gen(ls_str)
 gen individual_id = folio_str + "_" + ls_str
+rename ls ls_individual
+rename ls_str ls_str_individual
 save "${rawdata}\selfperchealth_aux_proxy", replace
 
 
@@ -175,7 +182,7 @@ drop if _merge_1==1
 drop if _merge_1==2
 
 *------------1.3: Keep only relevant data
-keep folio folio_str ls ls_str edo mpio loc edad id_loc es01 es05 es15 es16 individual_id _merge_1
+keep folio folio_str ls ls_str edo mpio loc edad id_loc es01 es05 es15 es16 individual_id _merge_1 ls_str_individual ls_individual
 
 /*==============================================================================
  2.Add label variables - HS self perception (wave 1) 
@@ -228,6 +235,8 @@ label var panel_wave "Panel wave from MxFLS"
 order panel_wave, b(folio)
 gen origin_report="Proxy book"
 label var origin_report "Type of book the data originated from"
+label var ls "Individual ID from cover book"
+label var ls_str "Individual ID from cover book"
 save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_finproxy.dta", replace
 
 
@@ -273,7 +282,8 @@ label var origin_report_cat "Type of book the data originated from"
 drop origin_report
 label define report_type 1"Official book" 2"Proxy book"
 label values origin_report_cat report_type
-
+order panel_wave folio folio_str ls ls_str ls_individual ls_str_individual individual_id loc origin_report_cat,before(edad)
+sort folio ls_individual
 save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_fin.dta", replace
 
 
@@ -303,6 +313,8 @@ destring ls, replace force
 tostring folio, gen(folio_str) format(%15.0f)
 tostring ls, gen(ls_str)
 gen individual_id = folio_str + "_" + ls_str
+rename ls ls_individual
+rename ls_str ls_str_individual
 save "${rawdata}\selfperchealth_aux", replace
 
 *------------1.2: Merge with cover data at household level (creating bridge)
@@ -322,7 +334,7 @@ merge 1:m folio_str using "${rawdata}\selfperchealth_aux", generate(_merge_1)
 *note: 265 not matched from master
 
 *------------1.3: Keep only relevant data
-keep folio folio_str ls ls_str ent mpio loc edad id_loc es01 es05 es15 es16 individual_id _merge_1 pid_link
+keep folio folio_str ls ls_str ent mpio loc edad id_loc es01 es05 es15 es16 individual_id _merge_1 pid_link ls_individual ls_str_individual
 rename ent edo
 
 /*==============================================================================
@@ -372,6 +384,9 @@ label var panel_wave "Panel wave from MxFLS"
 order panel_wave, b(folio)
 gen origin_report="Official book"
 label var origin_report "Type of book the data originated from"
+label var ls "Individual ID from cover book"
+label var ls_str "Individual ID from cover book"
+sort folio ls_individual
 save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w2_finofficial.dta", replace
 
 
@@ -401,6 +416,8 @@ destring ls, replace force
 tostring folio, gen(folio_str) format(%15.0f)
 tostring ls, gen(ls_str)
 gen individual_id = folio_str + "_" + ls_str
+rename ls ls_individual
+rename ls_str ls_str_individual
 save "${rawdata}\selfperchealth_aux_proxy", replace
 
 *------------1.2: Merge with cover data at household level (creating bridge)
@@ -423,7 +440,7 @@ drop if _merge_1==1
 drop if _merge_1==2
 
 *------------1.3: Keep only relevant data
-keep folio folio_str ls ls_str ent mpio loc edad id_loc es01 es05 es16 individual_id _merge_1 pid_link 
+keep folio folio_str ls ls_str ent mpio loc edad id_loc es01 es05 es16 individual_id _merge_1 pid_link ls_str_individual ls_individual
 rename ent edo
 
 /*==============================================================================
@@ -480,6 +497,9 @@ label var panel_wave "Panel wave from MxFLS"
 order panel_wave, b(folio)
 gen origin_report="Proxy book"
 label var origin_report "Type of book the data originated from"
+label var ls "Individual ID from cover book"
+label var ls_str "Individual ID from cover book"
+sort folio ls_individual
 save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w2_finproxy.dta", replace
 
 
@@ -512,7 +532,8 @@ label var origin_report_cat "Type of book the data originated from"
 drop origin_report
 label define report_type 1"Official book" 2"Proxy book"
 label values origin_report_cat report_type
-
+sort folio ls_individual
+order panel_wave folio folio_str ls ls_str ls_individual ls_str_individual pid_link individual_id loc origin_report_cat , before(edad)
 save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w2_fin.dta", replace
 
 
@@ -812,7 +833,64 @@ use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_fin.dta"
 save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_fin.dta", replace*/
 
 /*==============================================================================
-* PHASE 2: Harmonize folio id variable (2005 format)                           *
+* PHASE 2: Harmonize folio id variable ()                                      *
 ==============================================================================*/
 
-*------------P.2.1: Harmonize folio variable 
+*------------P.2.1: Harmonize folio variable (Wave 3)
+*Do: extract only numerics 
+clear all
+global finaldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.2 Final data"
+use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_fin.dta"
+gen folio_left = substr(folio, 1, 6)
+gen folio_right = substr(folio, 9, 10)
+gen folio_clean = folio_left + "" + folio_righ
+drop folio_str
+replace folio=folio_clean
+drop folio_left folio_right folio_clean
+save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_fin.dta", replace
+
+*------------P.2.1: Harmonize folio variable (Wave 2)
+*Do: generate trailing zeroes for folio
+clear all
+global finaldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.2 Final data"
+use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w2_fin.dta"
+gen folio_str_aux = string(folio, "%08.0f")
+drop folio
+rename folio_str_aux folio
+order folio , a( panel_wave)
+label var folio "HOUSEHOLD ID 2005"
+drop folio_str
+save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w2_fin.dta", replace
+
+*------------P.2.1: Harmonize folio variable (Wave 1)
+*Do: generate trailing zeroes for folio
+clear all
+global finaldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.2 Final data"
+use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_fin.dta"
+sort folio
+gen folio_str_aux = string(folio, "%08.0f")
+drop folio
+rename folio_str_aux folio
+order folio , a( panel_wave)
+label var folio "Household ID"
+drop folio_str
+save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_fin.dta", replace
+
+
+/*==============================================================================
+* PHASE 2: Harmonize pidlink                                                   *
+==============================================================================*/
+
+*------------P.2.1: Harmonize pid_link variable (Wave 3)
+*Do: extract only numerics 
+clear all
+global finaldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.2 Final data"
+use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_fin.dta"
+gen pidlink_left = substr(folio, 1, 6)
+gen pidlink_right = substr(folio, 9, 10)
+gen folio_clean = folio_left + "" + folio_righ
+drop folio_str
+replace folio=folio_clean
+drop folio_left folio_right folio_clean
+save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_fin.dta", replace
+
