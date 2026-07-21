@@ -567,6 +567,8 @@ gen folio_str="placeholder"
 destring ls, replace force
 tostring ls, gen(ls_str)
 gen individual_id = folio + "_" + ls_str
+rename ls ls_individual
+rename ls_str ls_str_individual
 save "${rawdata}\selfperchealth_aux", replace
 
 *------------1.2: Merge with cover data at household level (creating bridge)
@@ -587,7 +589,7 @@ merge 1:m folio using "${rawdata}\selfperchealth_aux", generate(_merge_1)
 *note: 35 not matched from using
 
 *------------1.3: Keep only relevant data
-keep folio folio_str ls ls_str ent mpio loc edad id_loc es01 es05 es15 es16 individual_id _merge_1 pid_link
+keep folio folio_str ls ls_str ent mpio loc edad id_loc es01 es05 es15 es16 individual_id _merge_1 pid_link ls_str_individual ls_individual
 rename ent edo
 
 /*==============================================================================
@@ -636,6 +638,9 @@ label var panel_wave "Panel wave from MxFLS"
 order panel_wave, b(folio)
 gen origin_report="Official book"
 label var origin_report "Type of book the data originated from"
+label var ls "Individual ID from cover book"
+label var ls_str "Individual ID from cover book"
+sort folio ls_individual
 save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_finofficial.dta", replace
 
 
@@ -664,6 +669,8 @@ gen folio_str="placeholder"
 destring ls, replace force
 tostring ls, gen(ls_str)
 gen individual_id = folio + "_" + ls_str
+rename ls ls_individual
+rename ls_str ls_str_individual
 save "${rawdata}\selfperchealth_aux_proxy", replace
 
 *------------1.2: Merge with cover data at household level (creating bridge)
@@ -685,7 +692,7 @@ drop if _merge_1==1
 drop if _merge_1==2
 
 *------------1.3: Keep only relevant data
-keep folio folio_str ls ls_str ent mpio loc edad id_loc es01 es05 es16 individual_id _merge_1 pid_link 
+keep folio folio_str ls ls_str ent mpio loc edad id_loc es01 es05 es16 individual_id _merge_1 pid_link ls_str_individual ls_individual
 rename ent edo
 
 /*==============================================================================
@@ -742,6 +749,9 @@ label var panel_wave "Panel wave from MxFLS"
 order panel_wave, b(folio)
 gen origin_report="Proxy book"
 label var origin_report "Type of book the data originated from"
+label var ls "Individual ID from cover book"
+label var ls_str "Individual ID from cover book"
+sort folio ls_individual
 save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_finproxy.dta", replace
 
 
@@ -791,7 +801,8 @@ drop origin_report
 label define report_type 1"Official book" 2"Proxy book"
 label values origin_report_cat report_type
 drop individual_id_dup
-
+order panel_wave folio folio_str ls ls_str ls_individual ls_str_individual pid_link individual_id loc origin_report_cat , before(edad)
+sort folio ls_individual
 save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_fin.dta", replace
 
 
@@ -815,7 +826,6 @@ label var D2_V1_I4_comphealth_proxy ///
 "D2_V1_I4. Proxy = Health compared to similar peers self-assessment"
 label var D2_V1_I4_comphealth ///
 "D2_V1_I4. Health compared to similar peers self-assessment"
-drop D2_V1_I3_exphealth_proxy
 save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_fin.dta", replace
 
 *------------P.1.2: Harmonize variable names & delete incomplete info (Wave 2)
@@ -843,7 +853,7 @@ global finaldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. D
 use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_fin.dta"
 gen folio_left = substr(folio, 1, 6)
 gen folio_right = substr(folio, 9, 10)
-gen folio_clean = folio_left + "" + folio_righ
+gen folio_clean = folio_left + "" + folio_right
 drop folio_str
 replace folio=folio_clean
 drop folio_left folio_right folio_clean
@@ -867,7 +877,6 @@ save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w2_fin.dta", replace
 clear all
 global finaldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.2 Final data"
 use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_fin.dta"
-sort folio
 gen folio_str_aux = string(folio, "%08.0f")
 drop folio
 rename folio_str_aux folio
@@ -886,11 +895,109 @@ save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_fin.dta", replace
 clear all
 global finaldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.2 Final data"
 use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_fin.dta"
-gen pidlink_left = substr(folio, 1, 6)
-gen pidlink_right = substr(folio, 9, 10)
-gen folio_clean = folio_left + "" + folio_righ
-drop folio_str
-replace folio=folio_clean
-drop folio_left folio_right folio_clean
+gen pidlink_left = substr(pid_link, 1, 6)
+gen pidlink_right = substr(pid_link, 9, 10)
+gen pidlink_clean = pidlink_left + "" + pidlink_right
+drop pidlink_right pidlink_left
+order pidlink_clean, a(pid_link)
 save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_fin.dta", replace
 
+
+*------------P.2.2: Harmonize pid_link variable (Wave 2)
+*Do: extract only numerics 
+clear all
+global finaldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.2 Final data"
+use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w2_fin.dta"
+*Note: It looks like everything is harmonized
+gen pidlink_clean=pid_link
+order pidlink_clean, a( pid_link)
+save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w2_fin.dta", replace
+
+*------------P.2.3: Harmonize pid_link variable (Wave 1) 
+clear all
+global finaldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.2 Final data"
+use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_fin.dta
+*I need to create an equal pidlink_clean
+*first I need to put leading zeroes on the individual ls as these are the last
+*2 digits of a pid_link, 6 first are folio
+gen ls_ind_aux = string(ls_individual, "%02.0f")
+gen pidlink_clean=folio + "" + ls_ind_aux
+drop ls_ind_aux
+drop individual_id_dup
+order pidlink_clean, after( ls_str_individual)
+tostring id_loc, replace
+order ls_individual- individual_id, af( ls_str)
+save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_fin.dta", replace
+
+/*==============================================================================
+* PHASE 3: First append                                                 *
+==============================================================================*/
+
+*------------P.3.1: Append waves
+clear all
+global finaldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.2 Final data"
+use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_fin.dta"
+append using "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w2_fin.dta"
+sort pidlink_clean panel
+append using "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_fin.dta"
+sort pidlink_clean panel
+global paneldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.3 Panel data"
+save "${paneldata}\MMCI_D2.Bodilyhealth_ind_v1_panel.dta", replace
+
+
+gen origin_report_cat2=1 if origin_report=="Official book"
+replace origin_report_cat2 =2 if origin_report=="Proxy book"
+label var origin_report_cat2 "Type of book the data originated from"
+drop origin_report
+label values origin_report_cat2 report_type
+replace origin_report_cat=origin_report_cat2 if origin_report_cat==.
+drop origin_report_cat2
+drop _merge_1
+encode pidlink_clean, gen(pid_id)
+label var pid_id "Individual constant ID prepared for panel analysis"
+duplicates report pid_id panel_wave
+duplicates tag pid_id panel_wave, gen(dup)
+list pid_link pidlink_clean pid_id folio panel_wave individual_id if dup
+duplicates drop pidlink_clean panel_wave, force
+*Note: 9 people appear twice on the same wave
+order pid_id, after(panel_wave)
+drop dup
+sort pid_id panel_wave
+save "${paneldata}\MMCI_D2.Bodilyhealth_ind_v1_panel.dta", replace
+
+/*<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+                     Check panel characteristics
+						   
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>*/
+
+global paneldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.3 Panel data"
+use "${paneldata}\MMCI_D2.Bodilyhealth_ind_v1_panel.dta"
+
+*------------PC.1: Verify panel characteristics
+
+xtset pid_id panel_wave
+xtdescribe
+bys pid_id: gen n_waves = _N
+bys pid_id: egen first_wave = min(panel_wave)
+bys pid_id: egen last_wave  = max(panel_wave)
+gen panel_pattern = .
+replace panel_pattern = 1 if n_waves==3
+replace panel_pattern = 2 if n_waves==2 & first_wave==1 & last_wave==2
+replace panel_pattern = 3 if n_waves==2 & first_wave==2 & last_wave==3
+replace panel_pattern = 4 if n_waves==2 & first_wave==1 & last_wave==3
+replace panel_pattern = 5 if n_waves==1 & panel_wave==1
+replace panel_pattern = 6 if n_waves==1 & panel_wave==2
+replace panel_pattern = 7 if n_waves==1 & panel_wave==3
+label define patt 1 "111 (all waves)" 2 "11. (waves 1-2)" ///
+3 ".11 (waves 2-3)" 4 "1.1 (gap)" 5 "1.. (wave 1 only)" ///
+6 ".1. (wave 2 only)" 7 "..1 (wave 3 only)"
+label values panel_pattern patt
+
+xtsum
+*Note: Verify that there is not within variation for static variables (i.e ids)
+bys folio: gen n_waves = _N
+tab n_waves
+tab panel_wave
+isid pid_id panel_wave
+misstable summarize
