@@ -35,7 +35,7 @@ Note:                  Missing value problem in self-perceived health,
 Note:                  (line 123) Keep track of type of book the data comes from
 Note:                  Duplicate report and handling section varies by wave
 Note:                  In wave 2 and 3 you keep pid_link (id 2002)
-				
+Note:                  Now for every merge do a post validation check with frames
 */
 
 /*==============================================================================
@@ -967,7 +967,7 @@ save "${paneldata}\MMCI_D2.Bodilyhealth_ind_v1_panel.dta", replace
 
 /*<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-                     Check panel characteristics
+                 Post-append: Check panel characteristics
 						   
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>*/
 
@@ -1001,3 +1001,96 @@ tab n_waves
 tab panel_wave
 isid pid_id panel_wave
 misstable summarize
+
+/*<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+                  Post-append: Check household changes and origin
+						   
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>*/
+
+*------------HHC1: Count number of unique households (folios) per individual
+bysort pid_id folio: gen tag_folio = (_n == 1)
+bysort pid_id: egen n_folios = total(tag_folio)
+
+*------------HHC2: Create dummy of whether the individual changed
+
+gen changed_house = (n_folios > 1)
+label variable n_folios "Number of unique households (folios) across panel"
+label variable changed_house "Individual changed household (folio) across panel"
+label define yesno 0 "No" 1 "Yes", replace
+label values changed_house yesno
+drop tag_folio
+
+*------------HHC3: Create indicator of wave of origin
+gen household_origin = substr(pid_link, 7, 1)
+gen household_origin_wave = .
+
+replace household_origin_wave = 1 if household_origin == "A"
+replace household_origin_wave = 2 if household_origin == "B"
+replace household_origin_wave = 3 if household_origin == "C"
+replace household_origin_wave = 1 if pid_link==""
+/*replace household_origin_wave = 2 if household_origin_wave==. & panel_wave==2
+*/
+
+label variable household_origin_wave ///
+"Wave in which household was first interviewed/formed"
+label define hhorigin 1 "Wave 1 (2002): Original panel household" ///
+2 "Wave 2 (2005-06): Split-off household" ///
+3 "Wave 3 (2009-12): Split-off household"
+label values household_origin_wave hhorigin
+drop household_origin
+
+save "${paneldata}\MMCI_D2.Bodilyhealth_ind_v1_panel.dta", replace
+
+/*<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+                  Post-append: Last validation rules for panel merging
+						   
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>*/
+
+clear all
+global paneldata "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.3 Panel data"
+global finaldata "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.2 Final data"
+use "${paneldata}\MMCI_D2.Bodilyhealth_ind_v1_panel.dta", clear
+
+*------------VR1: Create frames to do operations on multiple datasets
+frame create wave1
+frame create wave2
+frame create wave3
+
+frame wave1: {
+    use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_fin.dta", clear
+    keep pidlink_clean folio
+    duplicates drop
+}
+
+frame wave2: {
+    use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w2_fin.dta", clear
+    keep pidlink_clean folio
+    duplicates drop
+}
+
+frame wave3: {
+    use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_fin.dta", clear
+    keep pidlink_clean folio
+    duplicates drop
+}
+
+*------------VR2: Link the person id
+frlink m:1 pidlink_clean, frame(wave1) gen(link_w1)
+frlink m:1 pidlink_clean, frame(wave2) gen(link_w2)
+frlink m:1 pidlink_clean, frame(wave3) gen(link_w3)
+
+*------------VR3: Create person level validation variable
+gen person_w1 = (link_w1 < .)
+gen person_w2 = (link_w2 < .)
+gen person_w3 = (link_w3 < .)
+label define yesno 0 "No" 1 "Yes", replace
+label values person_w1 yesno
+label values person_w2 yesno
+label values person_w3 yesno
+label var person_w1 "Person exists in Wave 1 dataset"
+label var person_w2 "Person exists in Wave 2 dataset"
+label var person_w3 "Person exists in Wave 3 dataset"
+
+save "${paneldata}\MMCI_D2.Bodilyhealth_ind_v1_panel.dta", replace
