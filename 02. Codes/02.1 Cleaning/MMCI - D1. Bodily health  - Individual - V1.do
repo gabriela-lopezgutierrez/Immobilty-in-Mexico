@@ -67,6 +67,8 @@ save "${rawdata}\selfperchealth_aux", replace
 
 
 *------------1.2: Merge with cover data at household level (creating bridge)
+* Note: Bridge to merge with community data through loc_id
+clear all
 global rawdata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.1 Raw data\Wave I\Household\hh02dta_bc - Book C (Control book) W1"
 use "${rawdata}\c_portad"
 tostring folio, gen(folio_str) format(%15.0f)
@@ -916,7 +918,7 @@ save "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w2_fin.dta", replace
 *------------P.2.3: Harmonize pid_link variable (Wave 1) 
 clear all
 global finaldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.2 Final data"
-use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_fin.dta
+use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_fin.dta"
 *I need to create an equal pidlink_clean
 *first I need to put leading zeroes on the individual ls as these are the last
 *2 digits of a pid_link, 6 first are folio
@@ -938,13 +940,13 @@ clear all
 global finaldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.2 Final data"
 use "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w3_fin.dta"
 append using "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w2_fin.dta"
-sort pidlink_clean panel
+sort pidlink_clean panel_wave
 append using "${finaldata}\MMCI_D2.Bodilyhealth_ind_v1_w1_fin.dta"
-sort pidlink_clean panel
+sort pidlink_clean panel_wave
 global paneldata= "C:\Users\hp\Desktop\Dissertation\Dissertation procedure\01. Data\01.3 Panel data"
 save "${paneldata}\MMCI_D2.Bodilyhealth_ind_v1_panel.dta", replace
 
-
+*------------P.3.2: Enconde id for panel analysis
 gen origin_report_cat2=1 if origin_report=="Official book"
 replace origin_report_cat2 =2 if origin_report=="Proxy book"
 label var origin_report_cat2 "Type of book the data originated from"
@@ -978,6 +980,8 @@ use "${paneldata}\MMCI_D2.Bodilyhealth_ind_v1_panel.dta"
 
 xtset pid_id panel_wave
 xtdescribe
+
+*------------PC.2: Verify gap patterns
 bys pid_id: gen n_waves = _N
 bys pid_id: egen first_wave = min(panel_wave)
 bys pid_id: egen last_wave  = max(panel_wave)
